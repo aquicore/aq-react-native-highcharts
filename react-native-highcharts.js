@@ -66,7 +66,7 @@ class ChartWeb extends Component {
             width: e.nativeEvent.layout.width,
         })
     }
-  }
+  
   createChartHTML(config) {
     return `<html>        
         <head>
