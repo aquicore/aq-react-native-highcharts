@@ -16,6 +16,7 @@ class ChartWeb extends Component {
 
         this.state={
             init:`<html>
+                    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0" />
                     <style media="screen" type="text/css">
                     #container {
                         width:100%;
@@ -25,15 +26,22 @@ class ChartWeb extends Component {
                         right:0;
                         bottom:0;
                         position:absolute;
+                        user-select: none;
+                        -webkit-user-select: none;
                     }
                     </style>
                     <head>
                         <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
                         ${this.props.stock ? '<script src="https://code.highcharts.com/stock/highstock.js"></script>'
                                       : '<script src="https://code.highcharts.com/highcharts.js"></script>'}
+                        ${this.props.more ? '<script src="https://code.highcharts.com/highcharts-more.js"></script>'
+                                      : ''}
+                        ${this.props.guage ? '<script src="https://code.highcharts.com/modules/solid-gauge.js"></script>'
+                                      : ''}
                         <script src="https://code.highcharts.com/modules/exporting.js"></script>
                         <script>
                         $(function () {
+                            Highcharts.setOptions(${JSON.stringify(this.props.options)});
                             Highcharts.${this.props.stock ? 'stockChart' : 'chart'}('container', `,
             end:`           );
                         });
@@ -67,7 +75,7 @@ class ChartWeb extends Component {
 
         config = JSON.parse(config)
         let concatHTML = `${this.state.init}${flattenObject(config)}${this.state.end}`;
-
+        
         return (
           <View style={this.props.style}>
               <WebView
@@ -79,6 +87,7 @@ class ChartWeb extends Component {
                   scalesPageToFit={true}
                   scrollEnabled={false}
                   automaticallyAdjustContentInsets={true}
+                  {...this.props}
               />
           </View>
         );
@@ -92,7 +101,8 @@ var flattenObject = function (obj, str='{') {
     return `${str.slice(0, str.length - 2)}}`
 };
 
-var flattenText = function(item) {
+var flattenText = function(item,key) {
+    if(key=="y") console.log(item, typeof item);
     var str = ''
     if (item && typeof item === 'object' && item.length == undefined) {
         str += flattenObject(item)
@@ -101,7 +111,7 @@ var flattenText = function(item) {
         item.forEach(function(k2) {
             str += `${flattenText(k2)}, `
         })
-        str = str.slice(0, str.length - 2)
+        if(item.length>0) str = str.slice(0, str.length - 2)
         str += ']'
     } else if(typeof item === 'string' && item.slice(0, 8) === 'function') {
         str += `${item}`
