@@ -57,6 +57,7 @@ class ChartWeb extends Component {
                 width:win.width
             }
         }
+        this.reRenderWebView = this.reRenderWebView.bind(this)
     }
 
     // used to resize on orientation of display
